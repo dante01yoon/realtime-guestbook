@@ -11,7 +11,7 @@
 ## Data Model (Supabase)
 - `entries`: `id (uuid, pk)`, `created_at (timestamp, default now)`, `author (text)`, `message (text)`, `image_url (text, storage public path)`.
 - `comments`: `id (uuid, pk)`, `entry_id (uuid, fk -> entries.id)`, `author (text)`, `body (text)`, `created_at (timestamp)`.
-- Storage bucket `guestbook` (public) for uploaded/drawn PNGs.
+- Storage bucket `entries` (public, configurable via `NEXT_PUBLIC_SUPABASE_BUCKET`) for 업로드된 PNG.
 - RLS policies allow insert/read for anonymous users; optional per-IP throttling via Edge Function later.
 
 ## Application Layers
@@ -20,16 +20,19 @@
 - **Realtime Layer**: Supabase Channels for `entries` + per-entry `comments` streaming; hooks encapsulate subscription lifecycle.
 
 ## Key Modules & Files
-- `lib/supabase-client.ts`: browser/server safe client factory; reads env (NEXT_PUBLIC_SUPABASE_URL/KEY).
-- `lib/zod-schemas.ts`: `EntryPayload`, `CommentPayload`, `DrawingStroke` definitions.
-- `hooks/use-entries.ts`: list, create, subscribe. returns `entries`, `createEntry`, `uploadProgress`.
-- `hooks/use-comments.ts`: `useEntryComments(entryId)` with realtime + optimistic mutation helpers.
-- `components/canvas-board.tsx`: fabric.js or custom canvas with pen/eraser/clear; exports PNG blob.
-- `components/image-upload.tsx`: drag-n-drop + preview + progress bar.
-- `components/postit-card.tsx`: card presentation w/ rotation + color logic + skeleton state.
-- `components/comment-thread.tsx`: list, composer, optimistic row; handles focus management.
-- `components/toast-provider.tsx`: wraps Radix/sonner for errors.
-- `tests/**`: vitest/react-testing-library for hooks + util.
+- `lib/supabase-client.ts`: typed Supabase browser client + storage bucket constant.
+- `lib/env.ts`: Zod 기반 환경 변수 로더.
+- `lib/utils.ts`: 해시/랜덤/회전 유틸 (포스트잇 스타일).
+- `hooks/use-entries.ts`: 목록 패칭 + 생성 뮤테이션 + realtime 머지.
+- `hooks/use-comments.ts`: 댓글 패칭/구독 + 낙관적 등록.
+- `hooks/use-entry.ts`: 단일 카드 조회 쿼리.
+- `components/drawing-canvas.tsx`: 커스텀 캔버스(펜/지우개/초기화, PNG export).
+- `components/postit-card.tsx`: 갤러리 카드 프레젠테이션.
+- `components/providers.tsx`: React Query + 토스트 프로바이더.
+- `components/skeletons.tsx`: 로딩 스켈레톤 모음.
+- `app/` 라우트: `/`(갤러리), `/create`, `/entry/[id]`.
+- `supabase/schema.sql`: 테이블/RLS 정의.
+- `tests/utils.test.ts`: 유틸 단위 테스트 (Vitest).
 
 ## Flows
 1. **Card Creation**
@@ -37,8 +40,8 @@
    - `createEntryMutation` uploads to storage (tracked progress) → gets public URL → inserts row.
    - React Query invalidates `entries list`; realtime feed pushes to others immediately.
 2. **Gallery Update**
-   - `useEntries` subscribes to `entries` channel; merges incoming records while preserving sort (desc by `created_at`).
-   - UI animates card entrance (Framer Motion) to highlight new entry.
+   - `useEntries` subscribes to `entries` channel; merges incoming records while preserving desc sort.
+   - 카드 컴포넌트는 Tailwind 전환 효과로 hover/focus 피드백만 제공.
 3. **Comments**
    - `useEntryComments(entryId)` fetches base data, sets channel filter for `entry_id`.
    - Composer validates w/ Zod, uses optimistic add; rollback on failure w/ toast.
@@ -51,9 +54,9 @@
 - Error handling: toast & inline message; file upload failure regresses progress bar.
 
 ## Testing & Tooling
-- Add unit tests for hooks (mock Supabase client) + zod schemas.
-- Cypress component tests for canvas + gallery interactions (future).
-- Linting via `eslint-config-next`, formatting via `prettier`.
+- Vitest + jsdom 환경에서 유틸 단위 테스트 실행.
+- 추후 확장을 위해 hooks 테스트/RTL 도입 가능.
+- ESLint(`eslint-config-next`) 적용, Tailwind/TypeScript 기본 설정.
 
 ## Open Questions
 - Auth: currently anonymous; consider OTP login for spam mitigation.

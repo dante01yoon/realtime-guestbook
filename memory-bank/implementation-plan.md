@@ -1,39 +1,35 @@
 # Implementation Plan
 
 1. **Project Bootstrap**
-   - Create Next.js 15 (app router) project with TypeScript & Tailwind.
-   - Configure ESLint/Prettier, Husky (optional), testing stack (Vitest + RTL).
-   - Install deps: `@supabase/supabase-js`, `@supabase/ssr`, `react-query`, `zod`, `zustand` (optional), `sonner`, `framer-motion`, canvas helper (e.g., `perfect-freehand` or custom).
+   - Next.js 15(App Router) + TypeScript + Tailwind 초기 세팅.
+   - ESLint(`eslint-config-next`), Vitest 환경 구성.
+   - 필수 패키지: `@supabase/supabase-js`, `@tanstack/react-query`, `zod`, `sonner`, `clsx` 등.
 
 2. **Supabase Setup**
-   - Define tables `entries`, `comments`, enable realtime on both.
-   - Create storage bucket `guestbook`, public read + insert policy.
-   - Generate types via `supabase gen types typescript --project-id ...` → `types/supabase.ts`.
+   - `supabase/schema.sql`에 테이블(`entries`, `comments`)과 RLS 정책 정의.
+   - 스토리지 버킷 `entries` 생성, public read/insert 허용.
+   - `lib/database.types.ts`로 타입 수동 정의(필요 시 `supabase gen types`로 갱신).
 
 3. **Utility Layer**
-   - `lib/supabase-client.ts`: browser/server clients, channel helpers.
-   - `lib/zod-schemas.ts`: entry/comment payloads, file constraints (size, type).
-   - `lib/colors.ts` for post-it palette + rotation seeds.
+   - `lib/supabase-client.ts`: 브라우저 클라이언트 + storage helper.
+   - `lib/env.ts`: Zod 기반 환경 변수 검증.
+   - `lib/utils.ts`: 포스트잇 색상/회전 로직.
 
 4. **Hooks & Data Logic**
-   - `useEntries` hook: fetch list (`rpc` or `select`), create mutation (upload + insert), realtime subscription merge.
-   - `useCanvas` hook/service: manage drawing state, stroke serialization, export PNG blob.
-   - `useEntryComments(entryId)` hook: load comments, subscribe to realtime, provide `addComment` with optimistic updates.
+   - `useEntries`: 목록 조회 + 생성 뮤테이션 + realtime 구독.
+   - `useEntry`: 단일 카드 조회.
+   - `useComments` / `useAddComment`: 댓글 로드, 낙관적 추가.
 
 5. **Components**
-   - **CanvasBoard**: pen/eraser/clear, undo stack, exports blob.
-   - **ImageUpload**: dropzone, preview, progress indicator.
-   - **EntryForm**: combines canvas/upload result + text fields + submit; uses `useEntries` create mutation.
-   - **PostItBoard**: Masonry Grid + `PostItCard` child.
-   - **EntryDetail**: hero image, metadata.
-   - **CommentThread** + **CommentComposer**.
-   - Shared UI: `Button`, `Input`, `Skeleton`, `ToastProvider`.
+   - **DrawingCanvas**: 펜/지우개/초기화, PNG export.
+   - **PostitCard**: 포스트잇 스타일 카드.
+   - **Skeletons**: 갤러리/댓글 스켈레톤.
+   - **Providers**: React Query + Toaster 래퍼.
 
 6. **Pages / Routing**
-   - `/create`: EntryForm + canvas/upload components.
-   - `/gallery`: PostItBoard, suspense + skeleton, realtime badge.
-   - `/entry/[id]`: detail view + CommentThread.
-   - Default redirect `/` → `/gallery`.
+   - `/`: 갤러리 목록 (실시간 반영).
+   - `/create`: 업로드/드로잉 폼.
+   - `/entry/[id]`: 카드 상세 + 댓글.
 
 7. **Supabase Realtime Wiring**
    - Channels per table; filter comments by `entry_id`.
@@ -46,9 +42,8 @@
    - Responsive layout + safe-area padding.
 
 9. **Testing & QA**
-   - Unit tests: zod validators, `useEntries`, `useEntryComments` (mock supabase).
-   - Integration snapshot for PostItBoard (React Testing Library).
-   - Manual RT test: add entry/comment, ensure other tab updates.
+   - Vitest 단위 테스트(`lib/utils`).
+   - 추후 hooks/mock supabase 테스트 확장.
 
 10. **Deployment Prep**
     - Environment variable documentation in README.
