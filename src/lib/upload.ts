@@ -1,6 +1,13 @@
 import { v4 as uuid } from "uuid";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
+const ensureAscii = (value: string, envName: string) => {
+  if (/[^\x00-\x7F]/.test(value)) {
+    throw new Error(`${envName} 값에 ASCII 이외 문자가 포함되어 있습니다. 환경 변수를 확인해주세요.`);
+  }
+  return value;
+};
+
 export async function uploadImage(file: File | Blob, onProgress?: (progress: number) => void) {
   const supabase = getSupabaseClient();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,6 +17,7 @@ export async function uploadImage(file: File | Blob, onProgress?: (progress: num
     throw new Error("Supabase 환경 변수가 설정되지 않았습니다.");
   }
 
+  const sanitizedKey = ensureAscii(key, "NEXT_PUBLIC_SUPABASE_ANON_KEY");
   const fileExt = "png";
   const fileName = `${uuid()}.${fileExt}`;
   const path = `cards/${fileName}`;
@@ -20,8 +28,8 @@ export async function uploadImage(file: File | Blob, onProgress?: (progress: num
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", uploadUrl);
-    xhr.setRequestHeader("Authorization", `Bearer ${key}`);
-    xhr.setRequestHeader("apikey", key);
+    xhr.setRequestHeader("Authorization", `Bearer ${sanitizedKey}`);
+    xhr.setRequestHeader("apikey", sanitizedKey);
 
     xhr.upload.onprogress = (event) => {
       if (onProgress && event.lengthComputable) {
