@@ -8,10 +8,6 @@ export const imageFileSchema = z.object({
 });
 
 export const entryFormSchema = z.object({
-  author: z
-    .string()
-    .min(1, "이름을 입력해주세요.")
-    .max(40, "이름은 40자 이하로 입력해주세요."),
   message: z
     .string()
     .min(1, "메시지를 입력해주세요.")
@@ -23,10 +19,6 @@ export const entryFormSchema = z.object({
 });
 
 export const commentFormSchema = z.object({
-  author: z
-    .string()
-    .min(1, "이름을 입력해주세요.")
-    .max(40, "이름은 40자 이하로 입력해주세요."),
   body: z
     .string()
     .min(1, "댓글을 입력해주세요.")

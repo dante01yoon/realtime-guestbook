@@ -21,7 +21,7 @@ export default function CreatePage() {
         </p>
         <h1 className="text-3xl font-bold text-slate-900">방명록 카드를 만들어 주세요</h1>
         <p className="max-w-2xl text-sm text-slate-600">
-          사진을 업로드하거나 아래 드로잉 캔버스에서 자유롭게 그림을 그린 뒤 이름과 메시지를 남겨 주세요.
+          사진을 업로드하거나 아래 드로잉 캔버스에서 자유롭게 그림을 그린 뒤 로그인한 내 닉네임으로 메시지를 남겨 주세요.
         </p>
       </header>
       <Suspense fallback={<EntryFormSkeleton />}>

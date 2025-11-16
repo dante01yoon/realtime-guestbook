@@ -60,14 +60,14 @@ export default function PostItBoard() {
                   <div className="overflow-hidden rounded-2xl border border-black/10 bg-black/5">
                     <img
                       src={entry.image_url}
-                      alt={`${entry.author}님의 카드 미리보기`}
+                      alt={`${entry.profiles?.display_name ?? "방명록 사용자"}님의 카드 미리보기`}
                       className="h-36 w-full object-cover transition duration-200 group-hover:scale-105"
                     />
                   </div>
                   <p className="line-clamp-2 text-sm font-medium">{entry.message}</p>
                 </div>
                 <footer className="text-xs font-semibold uppercase tracking-wide text-slate-700">
-                  {entry.author}
+                  {entry.profiles?.display_name ?? "방명록 사용자"}
                 </footer>
               </div>
             </Link>

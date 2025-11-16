@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "outline";
 };
 
 const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
@@ -14,7 +14,9 @@ const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "bg-slate-900 text-white hover:bg-slate-700 focus-visible:ring-slate-400 disabled:bg-slate-400",
   secondary:
     "bg-white text-slate-900 border border-slate-300 hover:bg-slate-100 focus-visible:ring-slate-300",
-  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-200"
+  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-200",
+  outline:
+    "bg-transparent text-slate-900 border border-slate-300 hover:bg-slate-100 focus-visible:ring-slate-300"
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

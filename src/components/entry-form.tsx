@@ -1,9 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { CanvasBoard, exportCanvasToBlob } from "@/components/canvas-board";
 import { ImageUpload } from "@/components/image-upload";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { entryFormSchema } from "@/lib/zod-schemas";
@@ -11,6 +11,7 @@ import { useEntries } from "@/hooks/use-entries";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/auth-provider";
 
 const modes = [
   { value: "upload" as const, label: "사진 업로드" },
@@ -22,10 +23,10 @@ type Mode = (typeof modes)[number]["value"];
 export default function EntryForm() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { createEntry, isCreating, uploadProgress } = useEntries();
+  const { user, profile, isLoading: authLoading } = useAuth();
   const [mode, setMode] = useState<Mode>("upload");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadVersion, setUploadVersion] = useState(0);
-  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -46,7 +47,6 @@ export default function EntryForm() {
     }
 
     const validation = entryFormSchema.safeParse({
-      author: name,
       message,
       imageFile: imageBlob ?? new Blob()
     });
@@ -66,14 +66,12 @@ export default function EntryForm() {
 
     try {
       await createEntry({
-        author: name,
         message,
         imageFile: validation.data.imageFile
       });
       toast.success("방명록 카드가 등록되었어요!");
       setSelectedFile(null);
       setUploadVersion((prev) => prev + 1);
-      setName("");
       setMessage("");
       if (canvasRef.current) {
         const ctx = canvasRef.current.getContext("2d");
@@ -86,6 +84,31 @@ export default function EntryForm() {
       console.error(error);
     }
   };
+
+  if (authLoading) {
+    return <EntryFormSkeleton />;
+  }
+
+  if (!user || !profile) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
+        <p className="text-lg font-semibold text-slate-900">로그인 후 카드를 작성할 수 있어요.</p>
+        <p className="mt-2 text-sm text-slate-600">내 닉네임으로 카드와 댓글을 남겨보세요.</p>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="flex-1">
+            <Button asChild className="w-full">
+              <Link href="/login?next=/create">로그인하기</Link>
+            </Button>
+          </div>
+          <div className="flex-1">
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/signup">회원가입</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className="space-y-8" onSubmit={handleSubmit}>
@@ -118,18 +141,12 @@ export default function EntryForm() {
       )}
       {errors.imageFile ? <p className="text-sm text-red-500">{errors.imageFile}</p> : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4">
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+          <span className="font-semibold text-slate-900">작성자</span>
+          <span className="ml-2 text-slate-600">{profile.display_name}</span>
+        </div>
         <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-700">이름</span>
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="이름 또는 닉네임"
-            aria-invalid={Boolean(errors.author)}
-          />
-          {errors.author ? <span className="text-sm text-red-500">{errors.author}</span> : null}
-        </label>
-        <label className="space-y-2 md:col-span-2">
           <span className="text-sm font-medium text-slate-700">한 줄 메시지</span>
           <Textarea
             value={message}
