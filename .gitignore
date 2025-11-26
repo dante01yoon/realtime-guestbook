@@ -8,3 +8,6 @@ out
 .vscode
 .DS_Store
 coverage
+ch*.md
+.codex
+.specify
