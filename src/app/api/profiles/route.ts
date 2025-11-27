@@ -3,18 +3,18 @@ import { getSupabaseAdminClient } from "@/lib/supabase-admin";
 
 type Body = {
   userId?: string;
-  displayName?: string;
+  nickname?: string;
   avatarUrl?: string | null;
 };
 
 export async function POST(request: Request) {
   const supabase = getSupabaseAdminClient();
 
-  const { userId, displayName, avatarUrl = null }: Body = await request.json();
+  const { userId, nickname, avatarUrl = null }: Body = await request.json();
 
-  if (!userId || !displayName) {
+  if (!userId || !nickname) {
     return NextResponse.json(
-      { error: "userId와 displayName이 필요합니다." },
+      { error: "userId와 nickname이 필요합니다." },
       { status: 400 }
     );
   }
@@ -22,7 +22,8 @@ export async function POST(request: Request) {
   const { error } = await supabase.from("profiles").upsert(
     {
       id: userId,
-      display_name: displayName,
+      user_id: userId,
+      nickname,
       avatar_url: avatarUrl
     },
     { onConflict: "id" }

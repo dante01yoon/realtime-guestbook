@@ -1,7 +1,7 @@
 "use client";
 
+import React, { forwardRef } from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {

@@ -11,3 +11,5 @@
 ## Recent Changes
 - 001-profile-identity: Planning started; global nickname uniqueness, profile storage in Supabase
   (Postgres + avatars bucket) to show authorship in guestbook.
+- 001-profile-identity: 구현 진행 - 닉네임/아바타 프로필 페이지, API 라우트, 훅/밸리데이션/타입
+  정비 및 기본 테스트 추가.

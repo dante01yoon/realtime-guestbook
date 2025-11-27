@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo } from "react";
@@ -60,14 +61,15 @@ export default function PostItBoard() {
                   <div className="overflow-hidden rounded-2xl border border-black/10 bg-black/5">
                     <img
                       src={entry.image_url}
-                      alt={`${entry.profiles?.display_name ?? "방명록 사용자"}님의 카드 미리보기`}
+                      alt={`${entry.profiles?.nickname ?? "방명록 사용자"}님의 카드 미리보기`}
+                      loading="lazy"
                       className="h-36 w-full object-cover transition duration-200 group-hover:scale-105"
                     />
                   </div>
                   <p className="line-clamp-2 text-sm font-medium">{entry.message}</p>
                 </div>
                 <footer className="text-xs font-semibold uppercase tracking-wide text-slate-700">
-                  {entry.profiles?.display_name ?? "방명록 사용자"}
+                  {entry.profiles?.nickname ?? "방명록 사용자"}
                 </footer>
               </div>
             </Link>

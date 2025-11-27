@@ -64,3 +64,9 @@ Supabase의 가장 중요하고도 위험한 기능은 단연 **RLS(Row-Level Se
 Supabase는 의심할 여지 없이 현대 웹 개발의 패러다임을 바꾼 혁신적인 도구입니다. 하지만 그것은 개발자의 책임을 면제해주는 마법이 아닙니다. 오히려 개발자가 데이터베이스와 보안의 기본 원리를 더 깊이 이해하고 올바르게 사용했을 때 비로소 그 진정한 힘을 발휘하는 '최고급 연장'에 가깝습니다.
 
 초심자라면 Supabase의 편리함을 마음껏 누리되, 그 이면의 RLS, PostgreSQL, 그리고 서버-클라이언트 역할 분담의 원리를 꾸준히 학습해야 합니다. 그럴 때 Supabase는 당신의 가장 든든한 파트너가 되어줄 것입니다.
+
+## 프로젝트 메모 (공유 가치 있음)
+- 프로필 닉네임 전역 고유(2-20자); `author_profile_id`를 entries/comments에 저장해 렌더링 시 조인. 과거 `author` 컬럼은 nullable 유지(사용하지 않음).
+- `profiles.display_name`은 nullable로 두고 `nickname`으로 백필해 삽입 에러를 방지.
+- Storage: `avatars` 버킷(public read, 소유자만 업로드/업데이트/삭제) 정책 적용. 업로드 경로: `avatars/{user_id}/...`.
+- 타입 재생성 필요 시 `supabase gen types typescript`로 `src/types/supabase.ts` 동기화.***

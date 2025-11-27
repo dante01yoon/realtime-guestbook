@@ -29,17 +29,17 @@ changes may omit tests.
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Verify env vars for Supabase clients are set (`.env.local` keys) and note values needed in README.
-- [ ] T002 Confirm storage bucket `avatars` exists or is created in Supabase dashboard; document policy plan in `memory-bank/progress.md`.
+- [X] T001 Verify env vars for Supabase clients are set (`.env.local` keys) and note values needed in README.
+- [X] T002 Confirm storage bucket `avatars` exists or is created in Supabase dashboard; document policy plan in `memory-bank/progress.md`.
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-- [ ] T003 Create DB migration for `profiles` table with unique nickname and owner RLS (add file in `supabase/migrations/` per repo convention).
-- [ ] T004 Add fk columns `author_profile_id` to `entries` and `comments` (nullable, fk -> profiles.id) in same migration; backfill existing rows to null default.
-- [ ] T005 Update `supabase/schema.sql` (or generated types) to reflect profiles and new fks; regenerate Supabase types if applicable.
-- [ ] T006 Add storage policy for `avatars` bucket: public read, owner-only write/delete; 5 MB limit enforced in validation layer.
+- [X] T003 Create DB migration for `profiles` table with unique nickname and owner RLS (add file in `supabase/migrations/` per repo convention).
+- [X] T004 Add fk columns `author_profile_id` to `entries` and `comments` (nullable, fk -> profiles.id) in same migration; backfill existing rows to null default.
+- [X] T005 Update `supabase/schema.sql` (or generated types) to reflect profiles and new fks; regenerate Supabase types if applicable.
+- [X] T006 Add storage policy for `avatars` bucket: public read, owner-only write/delete; 5 MB limit enforced in validation layer.
 
 **Checkpoint**: Foundation ready - user story work can begin.
 
@@ -53,23 +53,23 @@ changes may omit tests.
 
 ### Tests for User Story 1 (Required) ⚠️
 
-- [ ] T007 [P] [US1] Contract test for profile API (GET/PUT/DELETE avatar) in `tests/contract/profile-api.test.ts`.
-- [ ] T008 [P] [US1] Integration test for profile form flow in `tests/integration/profile-form.test.tsx`.
-- [ ] T009 [P] [US1] Unit test for profile validation (nickname rules, file constraints) in `tests/unit/profile-validation.test.ts`.
+- [X] T007 [P] [US1] Contract test for profile API (GET/PUT/DELETE avatar) in `tests/contract/profile-api.test.ts`.
+- [X] T008 [P] [US1] Integration test for profile form flow in `tests/integration/profile-form.test.tsx`.
+- [X] T009 [P] [US1] Unit test for profile validation (nickname rules, file constraints) in `tests/unit/profile-validation.test.ts`.
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Add profile validation schema (nickname, avatar file) in `src/lib/validation/profile.ts`.
-- [ ] T011 [US1] Implement Supabase profile helper (CRUD) in `src/lib/profiles.ts` using `supabase` client.
-- [ ] T012 [US1] Add profile hook `useProfile` (fetch/update/delete avatar) in `src/hooks/use-profile.ts`.
-- [ ] T013 [US1] Create profile settings page/form at `src/app/profile/page.tsx` using shared UI + Tailwind.
-- [ ] T014 [US1] Add avatar upload component with preview/validation in `src/components/ui/avatar-upload.tsx`.
-- [ ] T015 [US1] Wire profile API route handlers (if applicable) in `src/app/api/profile/route.ts` (GET/PUT) and `src/app/api/profile/avatar/route.ts` (DELETE) per contracts.
-- [ ] T016 [US1] Ensure nickname uniqueness errors surface in UI; add toast and inline error handling in `src/app/profile/page.tsx`.
-- [ ] T017 [US1] Document profile setup UX and storage requirements in `memory-bank/progress.md`.
-- [ ] T035 [US1] Update entry creation mutation to set `author_profile_id` for new entries in `src/hooks/use-entries.ts`; handle failures gracefully.
-- [ ] T036 [US1] Update comment creation mutation to set `author_profile_id` for new comments in `src/hooks/use-comments.ts`.
-- [ ] T037 [US1] Add integration test ensuring new entries/comments persist `author_profile_id` in `tests/integration/profile-fk.test.ts`.
+- [X] T010 [US1] Add profile validation schema (nickname, avatar file) in `src/lib/validation/profile.ts`.
+- [X] T011 [US1] Implement Supabase profile helper (CRUD) in `src/lib/profiles.ts` using `supabase` client.
+- [X] T012 [US1] Add profile hook `useProfile` (fetch/update/delete avatar) in `src/hooks/use-profile.ts`.
+- [X] T013 [US1] Create profile settings page/form at `src/app/(main)/profile/page.tsx` using shared UI + Tailwind.
+- [X] T014 [US1] Add avatar upload component with preview/validation in `src/components/ui/avatar-upload.tsx`.
+- [X] T015 [US1] Wire profile API route handlers (if applicable) in `src/app/api/profile/route.ts` (GET/PUT) and `src/app/api/profile/avatar/route.ts` (DELETE) per contracts.
+- [X] T016 [US1] Ensure nickname uniqueness errors surface in UI; add toast and inline error handling in `src/app/profile/page.tsx`.
+- [X] T017 [US1] Document profile setup UX and storage requirements in `memory-bank/progress.md`.
+- [X] T035 [US1] Update entry creation mutation to set `author_profile_id` for new entries in `src/hooks/use-entries.ts`; handle failures gracefully.
+- [X] T036 [US1] Update comment creation mutation to set `author_profile_id` for new comments in `src/hooks/use-comments.ts`.
+- [X] T037 [US1] Add integration test ensuring new entries/comments persist `author_profile_id` in `tests/integration/profile-fk.test.ts`.
 
 **Checkpoint**: User Story 1 should be fully functional and testable independently.
 
@@ -83,15 +83,15 @@ changes may omit tests.
 
 ### Tests for User Story 2 (Required) ⚠️
 
-- [ ] T018 [P] [US2] Integration test for nickname change + avatar swap/remove in `tests/integration/profile-edit.test.tsx`.
+- [X] T018 [P] [US2] Integration test for nickname change + avatar swap/remove in `tests/integration/profile-edit.test.tsx`.
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Extend `useProfile` to handle avatar removal and nickname change flow in `src/hooks/use-profile.ts`.
-- [ ] T020 [US2] Update profile settings UI to support remove-avatar action and change nickname in `src/app/profile/page.tsx`.
-- [ ] T021 [US2] Add API support for avatar delete (`src/app/api/profile/avatar/route.ts`) and nickname change conflict handling.
-- [ ] T022 [US2] Update storage cleanup logic to delete replaced avatars in `src/lib/profiles.ts`.
-- [ ] T023 [US2] Add regression note for identity edit flows to `memory-bank/progress.md`.
+- [X] T019 [US2] Extend `useProfile` to handle avatar removal and nickname change flow in `src/hooks/use-profile.ts`.
+- [X] T020 [US2] Update profile settings UI to support remove-avatar action and change nickname in `src/app/(main)/profile/page.tsx`.
+- [X] T021 [US2] Add API support for avatar delete (`src/app/api/profile/avatar/route.ts`) and nickname change conflict handling.
+- [X] T022 [US2] Update storage cleanup logic to delete replaced avatars in `src/lib/profiles.ts`.
+- [X] T023 [US2] Add regression note for identity edit flows to `memory-bank/progress.md`.
 
 **Checkpoint**: User Stories 1 AND 2 should both work independently.
 
@@ -105,17 +105,17 @@ changes may omit tests.
 
 ### Tests for User Story 3 (Required) ⚠️
 
-- [ ] T024 [P] [US3] Integration test for identity display on entries/comments in `tests/integration/identity-display.test.tsx`.
+- [X] T024 [P] [US3] Integration test for identity display on entries/comments in `tests/integration/identity-display.test.tsx`.
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Update entries fetch/subscription to include profile join in `src/hooks/use-entries.ts`.
-- [ ] T026 [US3] Update comments fetch/subscription to include profile join in `src/hooks/use-comments.ts`.
-- [ ] T027 [US3] Render nickname/avatar (placeholder on null) on gallery cards in `src/components/postit-card.tsx`.
-- [ ] T028 [US3] Render nickname/avatar on comments UI in `src/components/comment-thread.tsx` (or comment item component).
-- [ ] T029 [US3] Add loading/empty/error states for identity display (skeleton/placeholder) in relevant components.
-- [ ] T030 [US3] Verify realtime consistency for identity updates (refresh path) and log findings in `memory-bank/progress.md`.
-- [ ] T038 [US3] Add fallback handling for legacy entries/comments with null `author_profile_id` (placeholder render + safe joins) and cover with test in `tests/integration/identity-display.test.tsx`.
+- [X] T025 [US3] Update entries fetch/subscription to include profile join in `src/hooks/use-entries.ts`.
+- [X] T026 [US3] Update comments fetch/subscription to include profile join in `src/hooks/use-comments.ts`.
+- [X] T027 [US3] Render nickname/avatar (placeholder on null) on gallery cards in `src/components/postit-card.tsx`.
+- [X] T028 [US3] Render nickname/avatar on comments UI in `src/components/comment-thread.tsx` (or comment item component).
+- [X] T029 [US3] Add loading/empty/error states for identity display (skeleton/placeholder) in relevant components.
+- [X] T030 [US3] Verify realtime consistency for identity updates (refresh path) and log findings in `memory-bank/progress.md`.
+- [X] T038 [US3] Add fallback handling for legacy entries/comments with null `author_profile_id` (placeholder render + safe joins) and cover with test in `tests/integration/identity-display.test.tsx`.
 
 **Checkpoint**: All user stories should now be independently functional.
 
@@ -123,10 +123,10 @@ changes may omit tests.
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T031 [P] Accessibility pass for profile form/avatar upload (labels, keyboard, ARIA) across `src/app/profile/page.tsx` and related components.
-- [ ] T032 [P] Performance review: ensure avatar fetch cached and images optimized; note in `memory-bank/progress.md`.
-- [ ] T033 [P] Update README with profile feature usage and env/storage notes in `README.md`.
-- [ ] T034 [P] Add final test run results and links to `tests/` artifacts in `memory-bank/progress.md`.
+- [X] T031 [P] Accessibility pass for profile form/avatar upload (labels, keyboard, ARIA) across `src/app/profile/page.tsx` and related components.
+- [X] T032 [P] Performance review: ensure avatar fetch cached and images optimized; note in `memory-bank/progress.md`.
+- [X] T033 [P] Update README with profile feature usage and env/storage notes in `README.md`.
+- [X] T034 [P] Add final test run results and links to `tests/` artifacts in `memory-bank/progress.md`.
 - [ ] T039 [P] Measure profile fetch render time (<150ms p95) and avatar upload (<5s for 5 MB) and record results in `memory-bank/progress.md`.
 
 ---

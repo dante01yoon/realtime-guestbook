@@ -144,7 +144,7 @@ export default function EntryForm() {
       <div className="grid gap-4">
         <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
           <span className="font-semibold text-slate-900">작성자</span>
-          <span className="ml-2 text-slate-600">{profile.display_name}</span>
+          <span className="ml-2 text-slate-600">{profile.nickname}</span>
         </div>
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-700">한 줄 메시지</span>

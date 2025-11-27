@@ -53,7 +53,7 @@ export function MainHeader() {
           ) : user && profile ? (
             <>
               <div className="text-right text-sm">
-                <p className="font-semibold text-slate-900">{profile.display_name}</p>
+                <p className="font-semibold text-slate-900">{profile.nickname}</p>
                 <p className="text-xs text-slate-500">내 카드 & 댓글</p>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout} disabled={isSigningOut}>
