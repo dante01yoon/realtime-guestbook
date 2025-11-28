@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useComments } from "@/hooks/use-comments";
@@ -63,7 +64,7 @@ export default function CommentThread({ entryId }: CommentThreadProps) {
               <li key={comment.id} className="rounded-xl bg-slate-50 p-4">
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <span className="font-semibold text-slate-700">
-                    {comment.profiles?.display_name ?? "익명"}
+                    {comment.profiles?.nickname ?? "익명"}
                   </span>
                   <span>{formatRelativeDate(comment.created_at)}</span>
                 </div>
@@ -89,7 +90,7 @@ export default function CommentThread({ entryId }: CommentThreadProps) {
           <form className="space-y-4" onSubmit={handleSubmit} aria-label="댓글 작성">
             <div className="text-sm text-slate-700">
               <span className="font-semibold text-slate-900">댓글 작성자</span>
-              <span className="ml-2 text-slate-600">{profile.display_name}</span>
+              <span className="ml-2 text-slate-600">{profile.nickname}</span>
             </div>
             <label className="space-y-2">
               <span className="text-sm font-medium text-slate-700">댓글</span>

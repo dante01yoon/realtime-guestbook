@@ -12,7 +12,7 @@ type CommentRow = Database["public"]["Tables"]["comments"]["Row"];
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 export type Comment = CommentRow & {
-  profiles: Pick<ProfileRow, "id" | "display_name" | "avatar_url"> | null;
+  profiles: Pick<ProfileRow, "id" | "nickname" | "avatar_url"> | null;
 };
 
 const commentKey = (entryId: string) => ["comments", entryId] as const;
@@ -21,7 +21,9 @@ async function fetchComments(entryId: string) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("comments")
-    .select("id, body, created_at, entry_id, user_id, profiles(id, display_name, avatar_url)")
+    .select(
+      "id, body, created_at, entry_id, user_id, author_profile_id, profiles(id, nickname, avatar_url)"
+    )
     .eq("entry_id", entryId)
     .order("created_at", { ascending: true });
 
@@ -42,36 +44,37 @@ export function useComments(entryId: string) {
     if (profileValue) {
       profileCache.current.set(profileValue.id, {
         id: profileValue.id,
-        display_name: profileValue.display_name,
+        nickname: (profileValue as ProfileRow).nickname ?? (profileValue as Comment["profiles"]).nickname,
         avatar_url: profileValue.avatar_url ?? null
       });
     }
   };
 
-  const resolveProfile = async (userId: string): Promise<Comment["profiles"]> => {
-    if (profileCache.current.has(userId)) {
-      return profileCache.current.get(userId) ?? null;
+  const resolveProfile = async (profileId: string | null): Promise<Comment["profiles"]> => {
+    if (!profileId) return null;
+    if (profileCache.current.has(profileId)) {
+      return profileCache.current.get(profileId) ?? null;
     }
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, display_name, avatar_url")
-      .eq("id", userId)
+      .select("id, nickname, avatar_url")
+      .eq("id", profileId)
       .maybeSingle();
     if (error) {
       console.error(error);
-      profileCache.current.set(userId, null);
+      profileCache.current.set(profileId, null);
       return null;
     }
     if (data) {
       const profileData = {
         id: data.id,
-        display_name: data.display_name,
+        nickname: data.nickname,
         avatar_url: data.avatar_url ?? null
       } as Comment["profiles"];
-      profileCache.current.set(userId, profileData);
+      profileCache.current.set(profileId, profileData);
       return profileData;
     }
-    profileCache.current.set(userId, null);
+    profileCache.current.set(profileId, null);
     return null;
   };
 
@@ -94,9 +97,10 @@ export function useComments(entryId: string) {
         entry_id: entryId,
         created_at: new Date().toISOString(),
         user_id: user.id,
+        author_profile_id: profile.id,
         profiles: {
           id: profile.id,
-          display_name: profile.display_name,
+          nickname: profile.nickname,
           avatar_url: profile.avatar_url
         }
       };
@@ -108,8 +112,15 @@ export function useComments(entryId: string) {
 
       const { data, error } = await supabase
         .from("comments")
-        .insert({ body, entry_id: entryId, user_id: user.id })
-        .select("id, body, created_at, entry_id, user_id, profiles(id, display_name, avatar_url)")
+        .insert({
+          body,
+          entry_id: entryId,
+          user_id: user.id,
+          author_profile_id: profile.id
+        })
+        .select(
+          "id, body, created_at, entry_id, user_id, author_profile_id, profiles(id, nickname, avatar_url)"
+        )
         .single();
 
       if (error) {
@@ -155,7 +166,7 @@ export function useComments(entryId: string) {
         (payload) => {
           const row = payload.new as CommentRow;
           void (async () => {
-            const relatedProfile = await resolveProfile(row.user_id);
+            const relatedProfile = await resolveProfile(row.author_profile_id ?? row.user_id);
             const newComment: Comment = { ...row, profiles: relatedProfile };
             queryClient.setQueryData(commentKey(entryId), (prev: Comment[] | undefined) => {
               if (!prev) return [newComment];

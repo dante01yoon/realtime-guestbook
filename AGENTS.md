@@ -2,15 +2,14 @@
 - 항상 이 문서를 조회하고 최신 상태로 유지한다.
 - 모든 작업 사이클마다 이 문서를 확인하고 필요한 내용을 추가/수정한다.
 - memory-bank 폴더의 설계/계획/진행 문서와 동기화해 일관성을 유지한다.
-- 최신 작업 히스토리를 간단히 기록해 협업 힌트를 남긴다. (예: 2025-11-12 인증/인가 구현 계획 작성)
+- 최신 작업 히스토리를 memory-bank에 간단히 기록해 협업 힌트를 남긴다. (예: 2025-11-12 인증/인가 구현 계획 작성)
 
 - 프런트엔드 코드 작성 시 Tailwind 유틸리티 우선, 공통 UI 컴포넌트(`src/components/ui`) 재사용을 우선한다.
 - Supabase 관련 로직은 `src/lib` 및 `src/hooks` 하위에 모듈화한다.
 - 테스트는 `tests/` 디렉터리에 배치하고 Vitest를 사용한다.
 
-## 기능 구현 규칙
-- 기능 구현 시작 전, 반드시 `memory-bank/prd-*.md` (기능 명세서) 파일 존재 여부를 확인하고, 해당 내용(목표, 사용자 스토리, 요구사항)을 최우선 기준으로 삼아 구현한다.
-- PRD 내용과 사용자의 채팅 지시가 상충될 경우, 사용자에게 우선순위를 확인한다.
-- PRD에 정의되지 않은 엣지 케이스나 예외 상황을 발견하면, 이를 사용자에게 알리고 `memory-bank/trouble-shooting.md` 또는 PRD 업데이트를 제안한다.
-- memory-bank 폴더의 설계/계획/진행 문서와 동기화해 일관성을 유지한다.
-- Supabase 테이블/설정 현황을 확인하거나 변경할 때는 supabase MCP(or CLI)을 사용해 일관성을 유지한다.
+## Recent Changes
+- 001-profile-identity: Planning started; global nickname uniqueness, profile storage in Supabase
+  (Postgres + avatars bucket) to show authorship in guestbook.
+- 001-profile-identity: 구현 진행 - 닉네임/아바타 프로필 페이지, API 라우트, 훅/밸리데이션/타입
+  정비 및 기본 테스트 추가.

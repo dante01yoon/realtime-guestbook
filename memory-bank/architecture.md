@@ -1,7 +1,7 @@
 # Architecture Overview
 
 ## Product Summary
-실시간 전자 방명록 웹앱. 업로드/드로잉으로 만든 카드들을 갤러리로 보여주고 개별 카드에서 실시간 댓글을 남긴다. Next.js 15(App Router) + TypeScript + TailwindCSS + Supabase(Schema/Storage/Realtime).
+실시간 전자 방명록 웹앱. 업로드/드로잉으로 만든 카드들을 갤러리로 보여주고 개별 카드에서 실시간 댓글을 남긴다. Next.js 14(App Router) + TypeScript + TailwindCSS + Supabase(Schema/Storage/Realtime).
 
 ## Core Domains
 1. **Creation (Page 1)**: 이미지 업로드 또는 캔버스 드로잉 → PNG 생성 → Storage 업로드 → `entries` 레코드 작성.

@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export function SignupForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +33,7 @@ export function SignupForm() {
       }
 
       const userId = data.user?.id;
-      const fallbackDisplayName = displayName || email.split("@")[0];
+      const fallbackNickname = nickname || email.split("@")[0];
       if (userId) {
         const response = await fetch("/api/profiles", {
           method: "POST",
@@ -42,7 +42,7 @@ export function SignupForm() {
           },
           body: JSON.stringify({
             userId,
-            displayName: fallbackDisplayName
+            nickname: fallbackNickname
           })
         });
 
@@ -81,8 +81,8 @@ export function SignupForm() {
         <label className="space-y-2 text-sm font-medium text-slate-700">
           공개 닉네임
           <Input
-            value={displayName}
-            onChange={(event) => setDisplayName(event.target.value)}
+            value={nickname}
+            onChange={(event) => setNickname(event.target.value)}
             required
             placeholder="방명록에서 사용할 이름"
           />

@@ -1,7 +1,7 @@
 # Implementation Plan
 
 1. **Project Bootstrap**
-   - Create Next.js 15 (app router) project with TypeScript & Tailwind.
+   - Create Next.js 14 (app router) project with TypeScript & Tailwind.
    - Configure ESLint/Prettier, Husky (optional), testing stack (Vitest + RTL).
    - Install deps: `@supabase/supabase-js`, `@supabase/ssr`, `react-query`, `zod`, `zustand` (optional), `sonner`, `framer-motion`, canvas helper (e.g., `perfect-freehand` or custom).
 

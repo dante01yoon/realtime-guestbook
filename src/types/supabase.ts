@@ -12,21 +12,30 @@ export interface Database {
       profiles: {
         Row: {
           id: string;
-          display_name: string;
+          user_id: string | null;
+          nickname: string;
           avatar_url: string | null;
+          display_name: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id: string;
-          display_name: string;
+          user_id?: string | null;
+          nickname: string;
           avatar_url?: string | null;
+          display_name?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
-          display_name?: string;
+          user_id?: string | null;
+          nickname?: string;
           avatar_url?: string | null;
+          display_name?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
       };
       entries: {
@@ -36,6 +45,8 @@ export interface Database {
           message: string;
           image_url: string;
           user_id: string;
+          author_profile_id: string | null;
+          author: string | null;
         };
         Insert: {
           id?: string;
@@ -43,6 +54,8 @@ export interface Database {
           message: string;
           image_url: string;
           user_id: string;
+          author_profile_id?: string | null;
+          author?: string | null;
         };
         Update: {
           id?: string;
@@ -50,6 +63,8 @@ export interface Database {
           message?: string;
           image_url?: string;
           user_id?: string;
+          author_profile_id?: string | null;
+          author?: string | null;
         };
       };
       comments: {
@@ -59,6 +74,8 @@ export interface Database {
           body: string;
           created_at: string;
           user_id: string;
+          author_profile_id: string | null;
+          author: string | null;
         };
         Insert: {
           id?: string;
@@ -66,6 +83,8 @@ export interface Database {
           body: string;
           created_at?: string;
           user_id: string;
+          author_profile_id?: string | null;
+          author?: string | null;
         };
         Update: {
           id?: string;
@@ -73,6 +92,8 @@ export interface Database {
           body?: string;
           created_at?: string;
           user_id?: string;
+          author_profile_id?: string | null;
+          author?: string | null;
         };
       };
     };

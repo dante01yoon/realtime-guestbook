@@ -14,14 +14,16 @@ const ENTRY_LIST_QUERY_KEY = ["entries"] as const;
 type EntryRow = Database["public"]["Tables"]["entries"]["Row"];
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 export type Entry = EntryRow & {
-  profiles: Pick<ProfileRow, "id" | "display_name" | "avatar_url"> | null;
+  profiles: Pick<ProfileRow, "id" | "nickname" | "avatar_url"> | null;
 };
 
 async function fetchEntries() {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("entries")
-    .select("id, message, image_url, created_at, user_id, profiles(id, display_name, avatar_url)")
+    .select(
+      "id, message, image_url, created_at, user_id, author_profile_id, profiles(id, nickname, avatar_url)"
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -42,36 +44,37 @@ export function useEntries() {
     if (profileValue) {
       profileCache.current.set(profileValue.id, {
         id: profileValue.id,
-        display_name: profileValue.display_name,
+        nickname: (profileValue as ProfileRow).nickname ?? (profileValue as Entry["profiles"]).nickname,
         avatar_url: profileValue.avatar_url ?? null
       });
     }
   };
 
-  const resolveProfile = async (userId: string): Promise<Entry["profiles"]> => {
-    if (profileCache.current.has(userId)) {
-      return profileCache.current.get(userId) ?? null;
+  const resolveProfile = async (profileId: string | null): Promise<Entry["profiles"]> => {
+    if (!profileId) return null;
+    if (profileCache.current.has(profileId)) {
+      return profileCache.current.get(profileId) ?? null;
     }
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, display_name, avatar_url")
-      .eq("id", userId)
+      .select("id, nickname, avatar_url")
+      .eq("id", profileId)
       .maybeSingle();
     if (error) {
       console.error(error);
-      profileCache.current.set(userId, null);
+      profileCache.current.set(profileId, null);
       return null;
     }
     if (data) {
       const profileData = {
         id: data.id,
-        display_name: data.display_name,
+        nickname: data.nickname,
         avatar_url: data.avatar_url
       } as Entry["profiles"];
-      profileCache.current.set(userId, profileData);
+      profileCache.current.set(profileId, profileData);
       return profileData;
     }
-    profileCache.current.set(userId, null);
+    profileCache.current.set(profileId, null);
     return null;
   };
 
@@ -95,9 +98,12 @@ export function useEntries() {
           .insert({
             message,
             image_url: publicUrl,
-            user_id: user.id
+            user_id: user.id,
+            author_profile_id: profile.id
           })
-          .select("id, message, image_url, created_at, user_id, profiles(id, display_name, avatar_url)")
+          .select(
+            "id, message, image_url, created_at, user_id, author_profile_id, profiles(id, nickname, avatar_url)"
+          )
           .single();
 
         if (error) {
@@ -146,10 +152,10 @@ export function useEntries() {
           table: "entries"
         },
         (payload) => {
-          const row = payload.new as EntryRow;
-          void (async () => {
-            const relatedProfile = await resolveProfile(row.user_id);
-            const newEntry: Entry = { ...row, profiles: relatedProfile };
+        const row = payload.new as EntryRow;
+        void (async () => {
+          const relatedProfile = await resolveProfile(row.author_profile_id ?? row.user_id);
+          const newEntry: Entry = { ...row, profiles: relatedProfile };
             queryClient.setQueryData(ENTRY_LIST_QUERY_KEY, (prev: Entry[] | undefined) => {
               if (!prev) return [newEntry];
               const exists = prev.some((item) => item.id === newEntry.id);

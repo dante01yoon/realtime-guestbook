@@ -19,12 +19,16 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 async function ensureProfileExists(userId: string, fallbackName: string) {
   const supabase = getSupabaseClient();
+  const safeNickname =
+    fallbackName.trim().slice(0, 20) || "방명록 사용자";
   await supabase
     .from("profiles")
     .upsert(
       {
         id: userId,
-        display_name: fallbackName,
+        user_id: userId,
+        nickname: safeNickname,
+        display_name: safeNickname,
         avatar_url: null
       },
       { onConflict: "id" }
@@ -47,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, display_name, avatar_url, created_at")
+        .select("id, user_id, nickname, display_name, avatar_url, created_at, updated_at")
         .eq("id", currentSession.user.id)
         .maybeSingle();
 
@@ -59,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!data) {
         const fallbackName =
+          (currentSession.user.user_metadata?.nickname as string | undefined) ??
           (currentSession.user.user_metadata?.display_name as string | undefined) ??
           currentSession.user.email?.split("@")[0] ??
           "방명록 사용자";
